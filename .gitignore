@@ -5,11 +5,15 @@ resource-workbench-demo/.chrome-profile/
 resource-workbench-demo/.edge-profile/
 resource-workbench-demo/.debug-profile*/
 resource-workbench-demo/output/playwright/
+resource-workbench-demo/__pycache__/
 resource-workbench-demo/demo-server-out.log
 resource-workbench-demo/demo-server-err.log
 resource-workbench-demo/tmp-import-test.md
+resource-workbench-demo/debug-*.png
+resource-workbench-demo/script.broken.backup.js
 resource-workbench-app/tauri-dev-out.log
 resource-workbench-app/tauri-dev-err.log
+tools/__pycache__/
 dist/
 tmp-test.pdf
 tmp-pdf-page1.png
