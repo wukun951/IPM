@@ -1,6 +1,4 @@
-# ImproveMAX / IPM
-
-![IPM Hero](./assets/github/hero-cover.png)
+<img width="547" height="505" alt="image" src="https://github.com/user-attachments/assets/d73cf70f-f0b1-447b-b2f0-9d004eb1f31d" />
 
 IPM 是一个面向设计师、AIGC 创作者与 AI 工作流构建者的本地优先资源工作台。  
 它把资料、提示词、工作流、Agent 规则与关系图谱组织成一个可调用、可联动、可复用的个人创作系统。
