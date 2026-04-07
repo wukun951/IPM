@@ -1,0 +1,400 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IPM</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop stop-color='%2374b4ff'/%3E%3Cstop offset='1' stop-color='%236ef3d6'/%3E%3C/linearGradient%3E%3CradialGradient id='glow' cx='0.5' cy='0.5' r='0.55'%3E%3Cstop offset='0' stop-color='white' stop-opacity='0.95'/%3E%3Cstop offset='0.22' stop-color='%23dfeeff' stop-opacity='0.88'/%3E%3Cstop offset='0.55' stop-color='%238db8ff' stop-opacity='0.28'/%3E%3Cstop offset='1' stop-color='%2308111f' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='%2308111f'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='url(%23g)' stroke-opacity='0.35' stroke-width='1.6'/%3E%3Cellipse cx='32' cy='32' rx='19' ry='12' fill='none' stroke='white' stroke-opacity='0.22' stroke-width='1.5' transform='rotate(55 32 32)'/%3E%3Ccircle cx='32' cy='32' r='13' fill='url(%23glow)'/%3E%3Ccircle cx='47' cy='19' r='3.2' fill='white' fill-opacity='0.9'/%3E%3Ccircle cx='18' cy='46' r='3.2' fill='white' fill-opacity='0.78'/%3E%3C/svg%3E"
+    />
+  <link rel="stylesheet" href="./styles.css?v=ipm-20260407-5" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-block">
+          <div class="brand-mark">
+            <span class="brand-mark__ring"></span>
+            <span class="brand-mark__ring brand-mark__ring--tilt"></span>
+            <span class="brand-mark__core"></span>
+            <span class="brand-mark__dot brand-mark__dot--one"></span>
+            <span class="brand-mark__dot brand-mark__dot--two"></span>
+          </div>
+          <div>
+            <p class="eyebrow">AI Resource Operating System</p>
+            <h1>IPM</h1>
+          </div>
+        </div>
+
+        <div class="topbar-center">
+          <label class="search-field">
+            <span id="searchFieldLabel">搜索资源</span>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="搜索标题、摘要、标签、集合..."
+            />
+          </label>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="ghost-button compact-button" id="shuffleFocusBtn">随机召回</button>
+          <div class="settings-shell">
+            <button class="ghost-button compact-button settings-trigger" id="settingsBtn" type="button" aria-haspopup="dialog" aria-expanded="false">设置</button>
+          </div>
+        </div>
+      </header>
+
+      <p class="action-feedback is-hidden" id="actionFeedback" aria-live="polite"></p>
+
+      <main class="main-grid">
+        <aside class="left-rail panel">
+          <section class="panel-section">
+            <div class="panel-title-row">
+              <span class="panel-label">当前项目</span>
+              <span class="badge">Active</span>
+            </div>
+            <h2 class="project-title" id="projectTitle"></h2>
+            <p class="muted" id="projectDescription"></p>
+          </section>
+
+          <section class="panel-section">
+            <span class="panel-label">资源类型</span>
+            <div class="chip-group" id="typeFilters"></div>
+          </section>
+
+          <section class="panel-section">
+            <div class="panel-title-row panel-title-row--compact">
+              <span class="panel-label">专题集合</span>
+              <div class="panel-inline-actions">
+                <button class="ghost-button compact-button" id="exportCollectionBtn">导出合集</button>
+                <button class="ghost-button compact-button" id="createCollectionBtn">新建合集</button>
+              </div>
+            </div>
+            <section class="create-collection-panel is-hidden" id="createCollectionPanel">
+              <label class="field">
+                <span>合集名称</span>
+                <input id="createCollectionTitle" type="text" placeholder="比如：商业脚本库" />
+              </label>
+              <label class="field">
+                <span>合集说明</span>
+                <textarea id="createCollectionSummary" rows="3" placeholder="一句话说明这个专题集合主要装什么"></textarea>
+              </label>
+              <div class="create-card-actions">
+                <button class="ghost-button compact-button" id="cancelCreateCollectionBtn">取消</button>
+                <button class="primary-button compact-button" id="submitCreateCollectionBtn">保存合集</button>
+              </div>
+            </section>
+            <div class="collection-list" id="collectionList"></div>
+          </section>
+
+          <section class="panel-section">
+            <span class="panel-label">常用标签</span>
+            <div class="tag-cloud" id="tagCloud"></div>
+          </section>
+
+          <section class="panel-section compact">
+            <span class="panel-label">操作建议</span>
+            <ul class="bullet-list">
+              <li>先从左侧集合切入，再拖资源进入中间画布。</li>
+              <li>点击卡牌会让右侧局部图谱聚焦。</li>
+              <li>双击资源卡可展开阅读层，工作台里的资源用右上角 × 移除。</li>
+            </ul>
+          </section>
+        </aside>
+
+        <section class="center-stage">
+          <div class="stage-row">
+            <section class="hero-panel panel">
+              <div class="panel-title-row">
+                <span class="panel-label">总控台</span>
+                <span class="muted-small" id="resultCountLabel"></span>
+              </div>
+              <div class="hero-grid">
+                <article class="hero-card">
+                  <span>本周沉淀</span>
+                  <strong id="metricResources">0</strong>
+                  <p>可直接复用的高价值资源</p>
+                </article>
+                <article class="hero-card">
+                  <span>当前焦点</span>
+                  <strong id="metricCollections">0</strong>
+                  <p>与你当前项目相关的专题集合</p>
+                </article>
+                <article class="hero-card">
+                  <span>联动强度</span>
+                  <strong id="metricLinks">0</strong>
+                  <p>当前焦点资源的局部关系数量</p>
+                </article>
+              </div>
+            </section>
+          </div>
+
+          <div class="workspace-grid">
+            <section class="resource-browser panel" id="resourceBrowserPanel">
+              <div class="panel-title-row resource-browser__header">
+                <span class="panel-label">资源库</span>
+                <div class="resource-toolbar">
+                  <button class="ghost-button compact-button" id="importFileBtn">导入文件</button>
+                  <button class="ghost-button compact-button" id="createCardBtn">新建卡片</button>
+                  <div class="view-switch">
+                    <button class="view-pill is-active" id="cardsViewBtn">卡牌视图</button>
+                    <button class="view-pill" id="graphViewBtn">图谱视图</button>
+                  </div>
+                </div>
+              </div>
+              <section class="search-toolbar" id="searchToolbar">
+                <div class="search-toolbar__group">
+                  <label class="search-toolbar__field">
+                    <span id="searchSortLabel">排序</span>
+                    <select id="searchSortSelect"></select>
+                  </label>
+                  <span class="search-toolbar__status" id="searchToolbarStatus">检索模式</span>
+                </div>
+                <button class="ghost-button compact-button" id="clearSearchBtn">清空搜索</button>
+              </section>
+              <section class="create-card-panel is-hidden" id="createCardPanel">
+                <div class="create-card-grid">
+                  <label class="field">
+                    <span>标题</span>
+                    <input id="createTitle" type="text" placeholder="比如：客户访谈知识卡" />
+                  </label>
+                  <label class="field">
+                    <span>类型</span>
+                    <select id="createType">
+                      <option value="knowledge">Knowledge</option>
+                      <option value="prompt">Prompt</option>
+                      <option value="script">Script</option>
+                      <option value="workflow">Workflow</option>
+                      <option value="profile">Profile</option>
+                      <option value="agent_rule">Agent Rule</option>
+                    </select>
+                  </label>
+                  <label class="field field--wide">
+                    <span>摘要</span>
+                    <textarea id="createSummary" rows="3" placeholder="一句话说明这张卡能解决什么问题"></textarea>
+                  </label>
+                  <label class="field">
+                    <span>标签</span>
+                    <input id="createTags" type="text" placeholder="用逗号分隔，例如：访谈, 品牌, 用户洞察" />
+                  </label>
+                  <label class="field">
+                    <span>集合</span>
+                    <select id="createCollection"></select>
+                  </label>
+                  <label class="field field--wide">
+                    <span>详情</span>
+                    <textarea id="createDetail" rows="4" placeholder="补充用途、建议放在哪个槽位，以及和哪些资源联动"></textarea>
+                  </label>
+                </div>
+                <div class="create-card-actions">
+                  <button class="ghost-button compact-button" id="cancelCreateCardBtn">取消</button>
+                  <button class="primary-button compact-button" id="submitCreateCardBtn">保存卡片</button>
+                </div>
+              </section>
+              <div class="browser-stage browser-stage--cards" id="cardsView">
+                <input
+                  id="importFileInput"
+                  type="file"
+                  multiple
+                  accept=".md,.markdown,.mdown,.mkd,.mkdn,.txt,.pdf,.docx,.png,.jpg,.jpeg,.gif,.webp,.bmp,.svg"
+                  hidden
+                />
+                <div class="drop-indicator is-hidden" id="dropIndicator">
+                  <div class="drop-indicator__core">
+                    <strong>释放以导入文件资源</strong>
+                    <span>支持 Markdown、TXT、PDF、DOCX 和常见图片格式</span>
+                  </div>
+                </div>
+                <div class="card-grid" id="resourceGrid"></div>
+              </div>
+              <div class="browser-stage browser-stage--graph is-hidden" id="graphView">
+                <div class="browser-graph" id="resourceMap"></div>
+              </div>
+            </section>
+
+            <section class="workspace-panel panel">
+              <div class="panel-title-row">
+                <span class="panel-label">项目工作台</span>
+                <div class="resource-toolbar">
+                  <button class="ghost-button compact-button" id="exportWorkspaceBtn">导出工作台</button>
+                  <button class="ghost-button compact-button" id="createWorkspaceSlotBtn">新建槽位</button>
+                  <span class="muted-small">拖入或点击“加入工作台”</span>
+                </div>
+              </div>
+              <section class="create-collection-panel is-hidden" id="createWorkspaceSlotPanel">
+                <label class="field">
+                  <span>槽位名称</span>
+                  <input id="createWorkspaceSlotTitle" type="text" placeholder="比如：灵感暂存槽" />
+                </label>
+                <label class="field">
+                  <span>槽位说明</span>
+                  <textarea id="createWorkspaceSlotDescription" rows="3" placeholder="一句话说明这个槽位主要放什么"></textarea>
+                </label>
+                <div class="create-card-actions">
+                  <button class="ghost-button compact-button" id="cancelCreateWorkspaceSlotBtn">取消</button>
+                  <button class="primary-button compact-button" id="submitCreateWorkspaceSlotBtn">保存槽位</button>
+                </div>
+              </section>
+              <div class="workspace-lanes" id="workspaceLanes"></div>
+            </section>
+          </div>
+        </section>
+
+        <aside class="right-rail">
+          <section class="panel detail-panel">
+            <div class="panel-title-row">
+              <span class="panel-label">资源详情</span>
+              <span class="badge subtle" id="detailTypeBadge">未选择</span>
+            </div>
+            <div id="detailPanel"></div>
+          </section>
+
+          <section class="panel graph-panel">
+            <div class="panel-title-row">
+              <span class="panel-label">局部图谱</span>
+              <div class="graph-panel__toolbar">
+                <div class="graph-panel__controls">
+                  <select class="detail-collection-select graph-relation-select" id="graphRelationTypeSelect"></select>
+                  <button class="ghost-button compact-button" id="graphRelationModeBtn">连线</button>
+                </div>
+                <span class="muted-small graph-panel__hint">围绕当前焦点资源展开</span>
+              </div>
+            </div>
+            <div class="graph-stage" id="graphStage"></div>
+            <div class="graph-legend">
+              <button class="graph-legend__button is-active" type="button" data-legend-filter="primary"><i class="legend-dot primary"></i>当前焦点</button>
+              <button class="graph-legend__button is-active" type="button" data-legend-filter="secondary"><i class="legend-dot secondary"></i>直接关联</button>
+              <button class="graph-legend__button is-active" type="button" data-legend-filter="workspace"><i class="legend-dot tertiary"></i>工作台资源</button>
+            </div>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <div class="settings-scrim is-hidden" id="settingsScrim" aria-hidden="true"></div>
+    <section class="settings-popover is-hidden" id="settingsPopover" role="dialog" aria-label="Settings">
+      <div class="settings-popover__header">
+        <div>
+          <p class="settings-popover__eyebrow" id="settingsEyebrow">Workspace Controls</p>
+          <h3 id="settingsTitle">设置</h3>
+        </div>
+        <button class="mini-button settings-close" id="settingsCloseBtn" type="button">Close</button>
+      </div>
+      <div class="settings-popover__body">
+        <section class="settings-group">
+          <div class="settings-group__label-row">
+            <span class="settings-group__label" id="settingsLanguageLabel">语言</span>
+          </div>
+          <div class="settings-segment">
+            <button class="settings-segment__option" id="settingsLanguageZhBtn" type="button">中文</button>
+            <button class="settings-segment__option" id="settingsLanguageEnBtn" type="button">EN</button>
+          </div>
+        </section>
+
+        <section class="settings-group">
+          <label class="settings-toggle" for="searchIncludeRawToggle">
+            <div>
+              <span class="settings-group__label" id="searchIncludeRawLabel">搜索正文</span>
+              <p class="settings-group__hint" id="settingsSearchBodyHint">将导入文档正文纳入检索范围</p>
+            </div>
+            <input id="searchIncludeRawToggle" type="checkbox" />
+          </label>
+        </section>
+
+        <section class="settings-group">
+          <label class="settings-select">
+            <span class="settings-group__label" id="importParseModeLabel">导入解析</span>
+            <select id="importParseModeSelect">
+              <option value="light">轻量解析</option>
+              <option value="skip">跳过解析</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="settings-group">
+          <div class="settings-group__label-row">
+            <div>
+              <span class="settings-group__label" id="settingsFileStorageLabel">Card File Folder</span>
+              <p class="settings-group__hint" id="settingsFileStorageHint">Choose where imported card files are stored. Existing managed files move automatically.</p>
+            </div>
+          </div>
+          <div class="settings-storage">
+            <div class="settings-storage__path" id="settingsFileStoragePath">Desktop only</div>
+            <button class="ghost-button compact-button settings-storage__button" id="settingsFileStorageBtn" type="button">Choose Folder</button>
+          </div>
+        </section>
+        <section class="settings-group">
+          <label class="settings-toggle" for="settingsHardwareAccelerationToggle">
+            <div>
+              <span class="settings-group__label" id="settingsHardwareAccelerationLabel">Hardware Acceleration</span>
+              <p class="settings-group__hint" id="settingsHardwareAccelerationHint">Use GPU/WebGL for graph particles and glow. Turn it off if graph view stutters.</p>
+            </div>
+            <input id="settingsHardwareAccelerationToggle" type="checkbox" />
+          </label>
+        </section>
+        <section class="settings-group settings-group--danger">
+          <button class="ghost-button compact-button settings-danger-button" id="resetWorkspaceBtn" type="button">重置工作台</button>
+        </section>
+      </div>
+    </section>
+
+    <template id="resourceCardTemplate">
+      <article class="resource-card" draggable="true">
+        <div class="resource-card__top">
+          <span class="resource-card__type"></span>
+          <div class="resource-card__actions">
+            <button class="meta-toggle-button pin-button" type="button" data-action="pin">Pin</button>
+            <button class="meta-toggle-button favorite-button" type="button" data-action="favorite">Fav</button>
+            <button class="mini-button add-button" type="button">加入工作台</button>
+          </div>
+        </div>
+        <div class="resource-card__body">
+          <div class="resource-card__content">
+            <h3 class="resource-card__title"></h3>
+            <p class="resource-card__summary"></p>
+            <div class="resource-card__meta">
+              <div class="tag-row"></div>
+              <div class="collection-row"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <div class="file-ghost-card is-hidden" id="fileGhostCard">
+      <span class="file-ghost-card__type">FILE</span>
+      <strong class="file-ghost-card__title">文件资源预览</strong>
+      <p class="file-ghost-card__meta">释放后将生成资源卡</p>
+    </div>
+
+    <div class="reader-overlay is-hidden" id="readerOverlay">
+      <div class="reader-backdrop" id="readerBackdrop"></div>
+      <article class="reader-panel">
+        <header class="reader-panel__header">
+          <div>
+            <p class="reader-panel__eyebrow" id="readerEyebrow">文档阅读</p>
+            <h2 id="readerTitle">Markdown 文档</h2>
+          </div>
+          <button class="ghost-button compact-button" id="closeReaderBtn">关闭</button>
+        </header>
+        <div class="reader-panel__meta" id="readerMeta"></div>
+        <div class="reader-panel__content markdown-body" id="readerContent"></div>
+      </article>
+    </div>
+
+    <div class="export-picker is-hidden" id="exportPicker">
+      <div class="export-picker__label" id="exportPickerLabel">导出格式</div>
+      <button class="export-picker__item" data-format="markdown">Markdown</button>
+      <button class="export-picker__item" data-format="json">JSON</button>
+      <button class="export-picker__item" data-format="txt">TXT</button>
+      <button class="export-picker__item" data-format="html">HTML</button>
+      <button class="export-picker__item" data-format="csv">CSV</button>
+    </div>
+
+    <script src="./vendor/jszip.min.js?v=ipm-20260331-1"></script>
+    <script src="./vendor/tesseract.min.js?v=ipm-20260331-1"></script>
+<script src="./script.js?v=ipm-20260407-5"></script>
+  </body>
+</html>

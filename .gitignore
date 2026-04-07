@@ -1,0 +1,17 @@
+resource-workbench-app/node_modules/
+resource-workbench-app/src-tauri/target/
+resource-workbench-demo/.playwright-cli/
+resource-workbench-demo/.chrome-profile/
+resource-workbench-demo/.edge-profile/
+resource-workbench-demo/.debug-profile*/
+resource-workbench-demo/output/playwright/
+resource-workbench-demo/demo-server-out.log
+resource-workbench-demo/demo-server-err.log
+resource-workbench-demo/tmp-import-test.md
+resource-workbench-app/tauri-dev-out.log
+resource-workbench-app/tauri-dev-err.log
+dist/
+tmp-test.pdf
+tmp-pdf-page1.png
+chi_sim.traineddata
+eng.traineddata
